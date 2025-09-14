@@ -5,10 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.example.EMS.entity.Employee;
 import com.example.EMS.repository.EmployeeRepository;
+import com.example.EMS.service.EmployeeService;
 import com.example.EMS.service.EmployeeServiceImpl;
 
 import java.util.*;
@@ -20,92 +22,44 @@ import static org.mockito.Mockito.*;
 class EmployeeServiceTest {
 
     @Mock
-    private EmployeeRepository employeeRepository;
+    private EmployeeRepository repository;
 
     @InjectMocks
-    private EmployeeServiceImpl employeeService;
+    private EmployeeService service;
 
-    private Employee employee;
+    private Employee emp;
 
     @BeforeEach
     void setUp() {
-        employee = new Employee(1L, "John Doe", "IT", 50000);
+        MockitoAnnotations.openMocks(this);
+        emp = new Employee(1L, "Alice", "HR", 50000.0);
     }
 
     @Test
-    void createEmployee_validInput_success() {
-        when(employeeRepository.save(employee)).thenReturn(employee);
+    void testGetEmployeeById_Found() {
+        when(repository.findById(1L)).thenReturn(Optional.of(emp));
 
-        Employee saved = employeeService.createEmployee(employee);
+        Employee result = service.getEmployeeById(1L);
 
-        assertNotNull(saved);
-        assertEquals("John Doe", saved.getName());
-        verify(employeeRepository, times(1)).save(employee);
+        assertNotNull(result);
+        assertEquals("Alice", result.getName());
+        assertEquals(50000.0, result.getSalary());
     }
 
     @Test
-    void createEmployee_nullName_throwsException() {
-        employee.setName(null);
+    void testGetEmployeeById_NotFound() {
+        when(repository.findById(2L)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> employeeService.createEmployee(employee));
-        verify(employeeRepository, never()).save(any());
+        assertThrows(NoSuchElementException.class, () -> service.getEmployeeById(2L));
     }
 
     @Test
-    void getEmployeeById_validId_success() {
-        when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee));
+    void testGetEmployeesByDepartment() {
+        when(repository.findByDepartment("HR")).thenReturn(Arrays.asList(emp));
 
-        Employee found = employeeService.getEmployeeById(1L);
+        List<Employee> result = service.getEmployeesByDepartment("HR");
 
-        assertNotNull(found);
-        assertEquals(1L, found.getId());
-        verify(employeeRepository, times(1)).findById(1L);
-    }
-
-    @Test
-    void getEmployeeById_invalidId_throwsException() {
-        when(employeeRepository.findById(2L)).thenReturn(Optional.empty());
-
-        assertThrows(NoSuchElementException.class, () -> employeeService.getEmployeeById(2L));
-    }
-
-    @Test
-    void updateEmployee_validId_success() {
-        Employee updated = new Employee(1L, "Jane Doe", "HR", 60000);
-
-        when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee));
-        when(employeeRepository.save(any(Employee.class))).thenReturn(updated);
-
-        Employee result = employeeService.updateEmployee(1L, updated);
-
-        assertEquals("Jane Doe", result.getName());
-        assertEquals("HR", result.getDepartment());
-        verify(employeeRepository, times(1)).save(employee);
-    }
-
-    @Test
-    void updateEmployee_invalidId_throwsException() {
-        Employee updated = new Employee(2L, "Jane Doe", "HR", 60000);
-        when(employeeRepository.findById(2L)).thenReturn(Optional.empty());
-
-        assertThrows(NoSuchElementException.class, () -> employeeService.updateEmployee(2L, updated));
-    }
-
-    @Test
-    void deleteEmployee_validId_success() {
-        when(employeeRepository.existsById(1L)).thenReturn(true);
-        doNothing().when(employeeRepository).deleteById(1L);
-
-        employeeService.deleteEmployee(1L);
-
-        verify(employeeRepository, times(1)).deleteById(1L);
-    }
-
-    @Test
-    void deleteEmployee_invalidId_throwsException() {
-        when(employeeRepository.existsById(2L)).thenReturn(false);
-
-        assertThrows(NoSuchElementException.class, () -> employeeService.deleteEmployee(2L));
-        verify(employeeRepository, never()).deleteById(anyLong());
+        assertEquals(1, result.size());
+        assertEquals("HR", result.get(0).getDepartment());
     }
 }

@@ -1,6 +1,10 @@
 package com.example.EMS.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 
 @Entity
 public class Employee {
@@ -17,9 +21,7 @@ public class Employee {
     public Employee(Long id, String name, String department, double salary) {
         this.id = id;
         this.name = name;
-        this.department = department;
-        this.salary = salary;
-    }
+        this.department = department;    }
 
     // Getters and Setters
     public Long getId() { return id; }
