@@ -1,31 +1,44 @@
-Employee Management System – Service Layer with Tests
+🏢 Employee Management System (EMS)
 
-A simple Spring Boot project demonstrating service layer development and testing with JUnit 5 + Mockito.
-The app manages Employee entities with basic CRUD operations.
+A simple Spring Boot project that manages employees with basic CRUD-style APIs.
+Includes JUnit + Mockito tests for 100% coverage.
 
-📂 Project Structure
-com.example.employeesystem
-├── EmployeeSystemApplication.java   # Main Spring Boot app
-├── entity/Employee.java              # Employee JPA entity
-├── repository/EmployeeRepository.java# JPA repository
-├── service/EmployeeService.java      # Service interface
-├── service/impl/EmployeeServiceImpl  # Service implementation
-└── service/EmployeeServiceTest.java  # Unit tests (JUnit + Mockito)
+🚀 Features
 
-⚙️ Features
+Get employee by ID
 
-Entity: Employee (id, name, department, salary)
+Get employees by Department
 
-Repository: EmployeeRepository extends JpaRepository
+Each employee has:
 
-Service Layer: CRUD methods with business rules:
+id (Long)
 
-Name cannot be null/blank
+name (String)
 
-Salary must be > 0
+department (String)
 
-NoSuchElementException for invalid IDs
+salary (Double)
 
-Testing: Unit tests using JUnit 5 + Mockito (mocked repository)
+📌 Technologies
 
-Demo: A CommandLineRunner runs sample CRUD operations on startup
+Java 21
+
+Spring Boot 3.x
+
+Spring Data JPA
+
+PostgreSQL (or H2 for tests)
+
+JUnit 5 + Mockito
+
+🔥 API Endpoints
+Method	Endpoint	Description
+GET	/employees/{id}	Get employee by ID
+GET	/employees/department/{dept}	Get employees by department
+🧪 Testing
+
+Unit tests with Mockito for service layer
+
+Controller tests with MockMvc
+
+100% test coverage (verified with JaCoCo)
